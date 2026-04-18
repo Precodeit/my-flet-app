@@ -22,20 +22,19 @@ jobs:
         run: pip install flet
 
       - name: Create iOS Build
-        # This creates the distribution-ready files
-        run: flet build ipa
+        # Added --no-codesign to ensure it doesn't wait for a Mac password
+        run: flet build ipa --no-codesign
 
       - name: List files (Troubleshooting)
-        # This shows us exactly where the files are in the logs
-        run: find build -maxdepth 3
+        run: find build -maxdepth 4
 
       - name: Upload Finished App
         uses: actions/upload-artifact@v4
         with:
           name: Precodeit-Flet-App
-          # Flet 1.0/0.84 puts the IPA in the outputs/ipa folder or build/ipa
           path: |
             build/ipa/*.ipa
             build/ios/ipa/*.ipa
             build/ios/archive/*.xcarchive
+            build/ios/iphoneos/*.app
           if-no-files-found: error
