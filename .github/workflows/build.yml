@@ -1,4 +1,4 @@
-name: Build iOS App
+name: Build Real iPhone App
 on: workflow_dispatch
 
 jobs:
@@ -21,14 +21,14 @@ jobs:
       - name: Install Flet
         run: pip install flet
 
-      - name: Build App
-        # We build for simulator to avoid the $99 Apple fee requirement
-        run: flet build ios-simulator
+      - name: Build for Real Device
+        # This creates the ARM64 version for real iPhones
+        run: flet build ipa --no-codesign
 
-      - name: Upload Everything Found
+      - name: Upload Real App Folder
         uses: actions/upload-artifact@v4
         with:
-          name: Precodeit-Flet-App
-          # This '**' means "search all subfolders"
-          path: build/**/*.app
+          name: Precodeit-Real-App
+          # This path specifically targets the Real Device products
+          path: build/flutter/ios/Runner.xcarchive/Products/Applications/*.app
           if-no-files-found: error
