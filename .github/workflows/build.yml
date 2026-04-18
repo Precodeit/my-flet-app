@@ -21,11 +21,14 @@ jobs:
       - name: Install Flet
         run: pip install flet
 
-      - name: Create IPA
-        run: flet build ipa --no-sign
+      - name: Create iOS Archive
+        # In Flet 0.84+, 'ios-simulator' or 'ipa' without signing flags 
+        # is the correct way to get a buildable artifact.
+        run: flet build ipa
 
       - name: Upload Finished App
         uses: actions/upload-artifact@v4
         with:
           name: Precodeit-Flet-App
-          path: build/ipa/*.ipa
+          # Flet 0.84+ stores the unsigned archive here
+          path: build/ios/archive/*.xcarchive
