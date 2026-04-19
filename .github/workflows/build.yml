@@ -21,14 +21,14 @@ jobs:
       - name: Install Flet
         run: pip install flet
 
-      - name: Build Raw iOS App
-        # Using 'ios' instead of 'ipa' forces a device build without App Store checks
-        run: flet build ios --no-codesign
+      - name: Build for Real iPhone (ARM64)
+        # We use 'ipa' but pass the no-codesign flag directly to Flutter
+        run: flet build ipa --flutter-build-args --no-codesign
 
       - name: Upload iPhone App
         uses: actions/upload-artifact@v4
         with:
           name: Precodeit-iPhone-App
-          # This grabs the ARM64 .app bundle built for physical iPhones
-          path: build/ios/iphoneos/*.app
+          # This specifically searches for the ARM64 .app bundle inside the generated archive
+          path: build/**/*.xcarchive/Products/Applications/*.app
           if-no-files-found: error
