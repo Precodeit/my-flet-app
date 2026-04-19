@@ -3,7 +3,7 @@ import json
 import os
 import base64
 import warnings
-import urllib.parse 
+import urllib.parse
 
 # העלמת אזהרות ה-Deprecation של Flet כדי לשמור על קונסול נקי
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -123,7 +123,7 @@ def main(page: ft.Page):
     page.window.width = 450
     page.window.height = 800
     
-    # --- CRITICAL FIX 1: Remove all page borders so the background touches the very edges ---
+    # 1. Remove Flet's default invisible borders
     page.padding = 0
     page.spacing = 0
 
@@ -132,53 +132,47 @@ def main(page: ft.Page):
     # This container holds your foreground app buttons, menus, and forms
     content_container = ft.Container(expand=True, padding=10)
 
-    # --- CRITICAL FIX 2: Create a layout that forces the image to stretch and stay frozen ---
     # Layer 1: The Background Image (Stretches to 100% of the screen limits)
-    bg_layer = ft.Column(
+    main_layout = ft.Stack(
         controls=[
-            ft.Row(
-                controls=[ft.Image(src="bg.jpg", fit="cover", expand=True)],
-                expand=True
+            ft.Image(
+                src="bg.jpg",
+                fit="cover",
+                left=0, right=0, top=0, bottom=0
+            ),
+            ft.SafeArea(
+                content=content_container,
+                left=0, right=0, top=0, bottom=0
             )
         ],
         expand=True
     )
 
-    # Layer 2: The Stack (Puts the frozen background on the bottom, and the safe, scrolling content on top)
-    main_layout = ft.Stack(
-        controls=[
-            bg_layer, # Bottom layer (Ignores notch, covers glass)
-            ft.SafeArea(content=content_container, expand=True) # Top layer (Protects buttons from notch)
-        ],
-        expand=True
-    )
-    # -----------------------------------------------------------------------------------------
-
-    # --- FILE PICKER LOGIC ---
-    async def on_avatar_upload(e):
+    # --- CRITICAL FIX: Safe Universal FilePicker Initialization ---
+    def on_avatar_upload_result(e):
         try:
-            files = await ft.FilePicker().pick_files(allow_multiple=False, with_data=True)
-            if files and len(files) > 0:
-                f = files[0]
-                mime_type = "image/jpeg"
-                if getattr(f, "name", "").lower().endswith(".png"):
-                    mime_type = "image/png"
-                
-                file_bytes = None
-                if getattr(f, "content", None):
-                    file_bytes = f.content
-                elif getattr(f, "path", None):
+            if e.files and len(e.files) > 0:
+                f = e.files[0]
+                if f.path:
                     with open(f.path, "rb") as image_file:
                         file_bytes = image_file.read()
-                
-                if file_bytes:
+                    
+                    mime_type = "image/jpeg"
+                    if f.name.lower().endswith(".png"):
+                        mime_type = "image/png"
+                    
                     encoded_string = base64.b64encode(file_bytes).decode('utf-8')
                     data_url = f"data:{mime_type};base64,{encoded_string}"
                     backend.update_avatar(data_url)
                     render("personal_area")
         except Exception as ex:
             print(f"Error picking file: {ex}")
-    # -------------------------
+
+    # Create it empty first, then attach the handler manually!
+    file_picker = ft.FilePicker()
+    file_picker.on_result = on_avatar_upload_result
+    page.overlay.append(file_picker)
+    # -----------------------------------------------------
 
     def render(screen_name):
         # Push the new screen into the protected content container
@@ -226,13 +220,13 @@ def main(page: ft.Page):
         
         return ft.Container(
             content=ft.Row([menu, logo], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-            border=ft.border.only(bottom=ft.border.BorderSide(2, "#eeeeee")),
+            border=ft.border.only(bottom=ft.border.BorderSide(2, ft.Colors.GREY_300)),
             padding=ft.padding.only(bottom=10, top=10),
             margin=ft.margin.only(bottom=20)
         )
 
     def build_screen(screen):
-        # --- CRITICAL FIX 3: The foreground Column handles the scrolling now, sliding safely over the fixed background! ---
+        # The invisible column handles scrolling smoothly over the fixed background
         content = ft.Column(expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER, scroll="auto")
         
         if screen not in ["welcome", "login_form", "register_form", "after_register_step"]:
@@ -313,8 +307,17 @@ def main(page: ft.Page):
             username = backend.user_session["name"]
             if username == "אורח" or not username:
                 content.controls.extend([
-                    ft.Container(content=ft.Text("משתמשים אורחים לא יכולים לשמור נתונים. נא להתחבר למערכת.", color=ft.Colors.RED, size=18), bgcolor=ft.Colors.WHITE, padding=10, border_radius=8),
-                    ft.Button(content=ft.Text("חזרה לחיפוש"), on_click=lambda _: render("search_screen"), bgcolor=ft.Colors.WHITE)
+                    ft.Container(
+                        content=ft.Text("משתמשים אורחים לא יכולים לשמור נתונים. נא להתחבר למערכת.", color=ft.Colors.RED, size=18, weight=ft.FontWeight.BOLD),
+                        bgcolor=ft.Colors.with_opacity(0.9, ft.Colors.WHITE),
+                        padding=15,
+                        border_radius=8,
+                        margin=ft.margin.only(bottom=20)
+                    ),
+                    ft.Row([
+                        ft.Button(content=ft.Text("התחבר עכשיו"), on_click=lambda _: render("login_form"), bgcolor=ft.Colors.BLUE_600, color=ft.Colors.WHITE),
+                        ft.Button(content=ft.Text("חזרה לחיפוש"), on_click=lambda _: render("search_screen"), bgcolor=ft.Colors.WHITE)
+                    ], alignment=ft.MainAxisAlignment.CENTER)
                 ])
                 return content
 
@@ -329,18 +332,33 @@ def main(page: ft.Page):
             else:
                 avatar_display = ft.CircleAvatar(content=ft.Text(username[0].upper(), size=40, color=ft.Colors.WHITE), radius=60, bgcolor=ft.Colors.GREY)
 
-            url_input = ft.TextField(value=avatar_url, label="הדבק קישור (URL)...", width=200, rtl=True, bgcolor=ft.Colors.WHITE)
-            btn_save_link = ft.Button(content=ft.Text("שמור קישור"), bgcolor=ft.Colors.BLUE_600, color=ft.Colors.WHITE, on_click=lambda e: (backend.update_avatar(url_input.value), render("personal_area")))
+            # --- NEW: NATIVE GALLERY BUTTON ---
+            # By passing file_type=IMAGE, we tell iOS to open the Photo Library instead of the Files app!
+            upload_btn = ft.Button(
+                content=ft.Text("העלה מהגלריה"),
+                icon=ft.Icons.PHOTO_LIBRARY,
+                on_click=lambda _: file_picker.pick_files(
+                    allow_multiple=False,
+                    file_type=ft.FilePickerFileType.IMAGE
+                ),
+                bgcolor=ft.Colors.WHITE
+            )
+            # ----------------------------------
+
+            url_input = ft.TextField(value=avatar_url, label="או הדבק קישור (URL)...", width=250, rtl=True, bgcolor=ft.Colors.WHITE)
+            btn_save_link = ft.Button(content=ft.Text("שמור"), bgcolor=ft.Colors.BLUE_600, color=ft.Colors.WHITE, on_click=lambda e: (backend.update_avatar(url_input.value), render("personal_area")))
             
-            upload_btn = ft.Button(content=ft.Text("העלה מהמחשב"), icon=ft.Icons.UPLOAD_FILE, on_click=lambda e: page.run_task(on_avatar_upload), bgcolor=ft.Colors.WHITE)
-            
-            avatar_input_row = ft.Row([upload_btn, btn_save_link, url_input, ft.Text("קישור תמונה:")], alignment=ft.MainAxisAlignment.CENTER, wrap=True)
+            avatar_input_col = ft.Column([
+                upload_btn,
+                ft.Text("או", weight=ft.FontWeight.BOLD, color=ft.Colors.GREY_600),
+                ft.Row([url_input, btn_save_link], alignment=ft.MainAxisAlignment.CENTER, wrap=True)
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
 
             avatar_section = ft.Container(
                 content=ft.Column([
                     ft.Text("תמונת פרופיל", size=18, weight=ft.FontWeight.BOLD),
                     avatar_display,
-                    avatar_input_row
+                    avatar_input_col
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                 border=ft.border.all(1, "#eeeeee"), padding=20, border_radius=10, bgcolor=ft.Colors.with_opacity(0.95, ft.Colors.WHITE)
             )
@@ -479,7 +497,6 @@ def main(page: ft.Page):
             )
             content.controls.append(filter_row)
 
-            # This inner column holds the cards, keeping the search filters fixed at the top if needed!
             list_container = ft.Column(expand=True)
             content.controls.append(list_container)
 
@@ -648,7 +665,7 @@ def main(page: ft.Page):
                 ], tight=True),
                 bgcolor=ft.Colors.RED_50, padding=10, border_radius=20, alignment=ft.Alignment.CENTER_RIGHT,
                 on_click=open_map,
-                ink=True 
+                ink=True
             )
 
             content.controls.extend([
@@ -689,7 +706,6 @@ def main(page: ft.Page):
 
         return content
 
-    # --- CRITICAL FIX 4: Add the layout straight to the page (Do NOT wrap the Stack in SafeArea) ---
     page.add(main_layout)
     render("welcome")
 
