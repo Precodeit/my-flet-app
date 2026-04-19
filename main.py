@@ -171,8 +171,8 @@ def main(page: ft.Page):
             files = await ft.FilePicker().pick_files(allow_multiple=False, with_data=True)
             if files and len(files) > 0:
                 f = files[0]
-                mime_type = "image/jpeg" 
-                if getattr(f, "name", "").lower().endswith(".png"): 
+                mime_type = "image/jpeg"
+                if getattr(f, "name", "").lower().endswith(".png"):
                     mime_type = "image/png"
                 
                 file_bytes = None
@@ -398,18 +398,18 @@ def main(page: ft.Page):
             inv_budget = {v: k for k, v in backend.budget_options.items()}
             
             people_dd = ft.Dropdown(
-                options=[ft.dropdown.Option(key=k, text=k) for k in backend.people_map.keys()], 
-                value=inv_people.get(backend.user_session['people_count'], '3-5'), 
+                options=[ft.dropdown.Option(key=k, text=k) for k in backend.people_map.keys()],
+                value=inv_people.get(backend.user_session['people_count'], '3-5'),
                 width=300
             )
             budget_dd = ft.Dropdown(
-                options=[ft.dropdown.Option(key=k, text=k) for k in backend.budget_options.keys()], 
-                value=inv_budget.get(backend.user_session['budget'], 'ללא הגבלה'), 
+                options=[ft.dropdown.Option(key=k, text=k) for k in backend.budget_options.keys()],
+                value=inv_budget.get(backend.user_session['budget'], 'ללא הגבלה'),
                 width=300
             )
             area_dd = ft.Dropdown(
-                options=[ft.dropdown.Option(key=a, text=a) for a in backend.areas], 
-                value=backend.user_session['area'], 
+                options=[ft.dropdown.Option(key=a, text=a) for a in backend.areas],
+                value=backend.user_session['area'],
                 width=300
             )
 
@@ -430,7 +430,7 @@ def main(page: ft.Page):
                     ft.Text("איזור:"), area_dd,
                     ft.Button(content=ft.Text("🔍 חפש עכשיו!"), bgcolor=ft.Colors.AMBER_800, color=ft.Colors.WHITE, height=50, width=300, on_click=exec_search)
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                bgcolor=ft.Colors.WHITE, padding=30, border_radius=16, 
+                bgcolor=ft.Colors.WHITE, padding=30, border_radius=16,
                 shadow=ft.BoxShadow(spread_radius=1, blur_radius=15, color=ft.Colors.BLUE_GREY_100)
             )
             content.controls.append(form_box)
@@ -445,25 +445,25 @@ def main(page: ft.Page):
 
             sort_dd = ft.Dropdown(
                 options=[
-                    ft.dropdown.Option(key='default', text='ברירת מחדל'), 
-                    ft.dropdown.Option(key='price_asc', text='מחיר: נמוך לגבוה'), 
+                    ft.dropdown.Option(key='default', text='ברירת מחדל'),
+                    ft.dropdown.Option(key='price_asc', text='מחיר: נמוך לגבוה'),
                     ft.dropdown.Option(key='price_desc', text='מחיר: גבוה לנמוך')
-                ], 
+                ],
                 value=backend.user_session['sort_by'], label="מיון", width=150
             )
 
             people_dd = ft.Dropdown(
-                options=[ft.dropdown.Option(key=k, text=k) for k in backend.people_map.keys()], 
+                options=[ft.dropdown.Option(key=k, text=k) for k in backend.people_map.keys()],
                 value=inv_people.get(backend.user_session['people_count'], '3-5'), label="אנשים", width=120
             )
 
             budget_dd = ft.Dropdown(
-                options=[ft.dropdown.Option(key=k, text=k) for k in backend.budget_options.keys()], 
+                options=[ft.dropdown.Option(key=k, text=k) for k in backend.budget_options.keys()],
                 value=inv_budget.get(backend.user_session['budget'], 'ללא הגבלה'), label="תקציב", width=150
             )
 
             area_dd = ft.Dropdown(
-                options=[ft.dropdown.Option(key=a, text=a) for a in backend.areas], 
+                options=[ft.dropdown.Option(key=a, text=a) for a in backend.areas],
                 value=backend.user_session['area'], label="איזור", width=120
             )
 
@@ -507,7 +507,7 @@ def main(page: ft.Page):
                             return go_to_details
 
                         title_btn = ft.Button(
-                            content=ft.Text(item['name'], size=20, weight=ft.FontWeight.W_900, color="#2c3e50", max_lines=2, overflow=ft.TextOverflow.ELLIPSIS), 
+                            content=ft.Text(item['name'], size=20, weight=ft.FontWeight.W_900, color="#2c3e50", max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
                             on_click=make_go_to_details(item),
                             bgcolor=ft.Colors.TRANSPARENT,
                             style=ft.ButtonStyle(padding=0)
@@ -547,7 +547,7 @@ def main(page: ft.Page):
                         )
 
                         top_row = ft.Row([
-                            ft.Container(content=title_btn, expand=True, padding=ft.padding.only(left=10)), 
+                            ft.Container(content=title_btn, expand=True, padding=ft.padding.only(left=10)),
                             price_tag
                         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.START)
 
@@ -556,7 +556,7 @@ def main(page: ft.Page):
                             ft.Text(f"📍 {item['address']}", color=ft.Colors.RED_700, size=14),
                             ft.Text(item['desc'], size=14, max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
                             fav_btn
-                        ], expand=True, margin=ft.margin.only(right=25)) 
+                        ], expand=True, margin=ft.margin.only(right=25))
 
                         card_row = ft.Row([img_box, details_col], alignment=ft.MainAxisAlignment.START, vertical_alignment=ft.CrossAxisAlignment.START)
 
@@ -649,7 +649,12 @@ def main(page: ft.Page):
 
         return content
 
-    page.add(main_container)
+    # Use main_container so Python knows what to wrap in the SafeArea
+    page.add(
+        ft.SafeArea(
+            content=main_container
+        )
+    )
     render("welcome")
 
 ft.run(main)
