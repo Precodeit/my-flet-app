@@ -123,16 +123,13 @@ def main(page: ft.Page):
     page.window.width = 450
     page.window.height = 800
     
-    # 1. Remove Flet's default invisible borders
     page.padding = 0
     page.spacing = 0
 
     backend = AppBackend()
 
-    # This container holds your foreground app buttons, menus, and forms
     content_container = ft.Container(expand=True, padding=10)
 
-    # Layer 1: The Background Image (Stretches to 100% of the screen limits)
     main_layout = ft.Stack(
         controls=[
             ft.Image(
@@ -148,7 +145,8 @@ def main(page: ft.Page):
         expand=True
     )
 
-    # --- CRITICAL FIX: Safe Universal FilePicker Initialization ---
+    # --- THE FILE PICKER ---
+    # Safe initialization. Will work perfectly once the environment is updated.
     def on_avatar_upload_result(e):
         try:
             if e.files and len(e.files) > 0:
@@ -168,14 +166,12 @@ def main(page: ft.Page):
         except Exception as ex:
             print(f"Error picking file: {ex}")
 
-    # Create it empty first, then attach the handler manually!
     file_picker = ft.FilePicker()
     file_picker.on_result = on_avatar_upload_result
-    page.overlay.append(file_picker)
+
     # -----------------------------------------------------
 
     def render(screen_name):
-        # Push the new screen into the protected content container
         content_container.content = build_screen(screen_name)
         page.update()
 
@@ -226,7 +222,6 @@ def main(page: ft.Page):
         )
 
     def build_screen(screen):
-        # The invisible column handles scrolling smoothly over the fixed background
         content = ft.Column(expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER, scroll="auto")
         
         if screen not in ["welcome", "login_form", "register_form", "after_register_step"]:
@@ -332,8 +327,8 @@ def main(page: ft.Page):
             else:
                 avatar_display = ft.CircleAvatar(content=ft.Text(username[0].upper(), size=40, color=ft.Colors.WHITE), radius=60, bgcolor=ft.Colors.GREY)
 
-            # --- NEW: NATIVE GALLERY BUTTON ---
-            # By passing file_type=IMAGE, we tell iOS to open the Photo Library instead of the Files app!
+            # --- GALLERY BUTTON ---
+            # Triggers native gallery if Flet environment is properly updated
             upload_btn = ft.Button(
                 content=ft.Text("העלה מהגלריה"),
                 icon=ft.Icons.PHOTO_LIBRARY,
@@ -709,4 +704,5 @@ def main(page: ft.Page):
     page.add(main_layout)
     render("welcome")
 
+# Change the very last line to force it to open in your browser
 ft.app(target=main, assets_dir="assets")
