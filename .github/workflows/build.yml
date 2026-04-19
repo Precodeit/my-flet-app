@@ -22,13 +22,15 @@ jobs:
         run: pip install flet
 
       - name: Build for Real iPhone
-        # Flet automatically creates an unsigned ARM64 archive because we aren't providing a Team ID.
         run: flet build ipa
 
       - name: Upload iPhone App
         uses: actions/upload-artifact@v4
         with:
           name: Precodeit-iPhone-App
-          # This digs into the archive and grabs the mobile .app bundle
-          path: build/ios/archive/**/*.app
+          # This catch-all grabs every mobile bundle created anywhere in the build folder
+          path: |
+            build/**/*.ipa
+            build/**/*.app
+            build/**/*.xcarchive
           if-no-files-found: error
