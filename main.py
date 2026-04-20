@@ -114,7 +114,7 @@ class AppBackend:
         return filtered
 
 def main(page: ft.Page):
-    page.title = "לאן באלי"
+    page.title = "2Where"
     page.rtl = True
     page.theme_mode = ft.ThemeMode.LIGHT
     page.fonts = {"Rubik": "https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&display=swap"}
@@ -146,7 +146,6 @@ def main(page: ft.Page):
     )
 
     # --- THE FILE PICKER ---
-    # Safe initialization. Will work perfectly once the environment is updated.
     def on_avatar_upload_result(e):
         try:
             if e.files and len(e.files) > 0:
@@ -208,10 +207,8 @@ def main(page: ft.Page):
         )
 
         logo = ft.Container(
-            content=ft.Text("לאן באלי", weight=ft.FontWeight.W_800, size=24, color="#4B0082"),
-            bgcolor=ft.Colors.with_opacity(0.8, ft.Colors.WHITE),
-            padding=ft.padding.symmetric(horizontal=10, vertical=2),
-            border_radius=8
+            content=ft.Text("2Where", weight=ft.FontWeight.W_800, size=24, color="#4B0082"),
+            padding=ft.padding.symmetric(horizontal=10, vertical=2)
         )
         
         return ft.Container(
@@ -230,8 +227,8 @@ def main(page: ft.Page):
         if screen == "welcome":
             content.controls.extend([
                 ft.Container(
-                    content=ft.Text("לאן באלי?", size=24, color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD),
-                    bgcolor="#4B0082", padding=20, border_radius=15, alignment=ft.Alignment.CENTER, width=400
+                    content=ft.Text("ברוכים הבאים ל-2Where", size=24, color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD),
+                    bgcolor="#4B0082", padding=20, border_radius=15, alignment=ft.Alignment(0, 0), width=400
                 ),
                 ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                 ft.Button(content=ft.Text("התחברות למערכת"), bgcolor=ft.Colors.BLUE_700, color=ft.Colors.WHITE, width=280, height=45, on_click=lambda _: render("login_form")),
@@ -241,7 +238,7 @@ def main(page: ft.Page):
             ])
 
         elif screen == "login_form":
-            err_txt = ft.Text(color=ft.Colors.RED, bgcolor=ft.Colors.WHITE)
+            err_txt = ft.Text(color=ft.Colors.RED, bgcolor=ft.Colors.TRANSPARENT)
             id_box = ft.TextField(label="שם/אימייל:", width=350, rtl=True, bgcolor=ft.Colors.with_opacity(0.9, ft.Colors.WHITE))
             pass_box = ft.TextField(label="סיסמה:", password=True, can_reveal_password=True, width=350, rtl=True, bgcolor=ft.Colors.with_opacity(0.9, ft.Colors.WHITE))
             
@@ -252,7 +249,7 @@ def main(page: ft.Page):
                 page.update()
 
             content.controls.extend([
-                ft.Container(content=ft.Text("התחברות", size=28, weight=ft.FontWeight.BOLD, color="#4B0082"), bgcolor=ft.Colors.with_opacity(0.8, ft.Colors.WHITE), padding=10, border_radius=8),
+                ft.Container(content=ft.Text("התחברות", size=28, weight=ft.FontWeight.BOLD, color="#4B0082"), padding=10),
                 id_box, pass_box, err_txt,
                 ft.Row([
                     ft.Button(content=ft.Text("חזרה"), width=150, on_click=lambda _: render("welcome")),
@@ -261,7 +258,7 @@ def main(page: ft.Page):
             ])
 
         elif screen == "register_form":
-            err_txt = ft.Text(color=ft.Colors.RED, bgcolor=ft.Colors.WHITE)
+            err_txt = ft.Text(color=ft.Colors.RED, bgcolor=ft.Colors.TRANSPARENT)
             name_box = ft.TextField(label="שם משתמש:", width=350, rtl=True, bgcolor=ft.Colors.with_opacity(0.9, ft.Colors.WHITE))
             email_box = ft.TextField(label="אימייל:", width=350, rtl=True, bgcolor=ft.Colors.with_opacity(0.9, ft.Colors.WHITE))
             pass_box = ft.TextField(label="סיסמה:", password=True, can_reveal_password=True, width=350, rtl=True, bgcolor=ft.Colors.with_opacity(0.9, ft.Colors.WHITE))
@@ -276,7 +273,7 @@ def main(page: ft.Page):
                 page.update()
 
             content.controls.extend([
-                ft.Container(content=ft.Text("הרשמה למערכת", size=28, weight=ft.FontWeight.BOLD, color="#f57c00"), bgcolor=ft.Colors.with_opacity(0.8, ft.Colors.WHITE), padding=10, border_radius=8),
+                ft.Container(content=ft.Text("הרשמה למערכת", size=28, weight=ft.FontWeight.BOLD, color="#f57c00"), padding=10),
                 name_box, email_box, pass_box, pass_conf, err_txt,
                 ft.Row([
                     ft.Button(content=ft.Text("חזרה"), width=150, on_click=lambda _: render("welcome")),
@@ -287,7 +284,7 @@ def main(page: ft.Page):
         elif screen == "after_register_step":
             new_user = backend.last_registered_user
             content.controls.extend([
-                ft.Container(content=ft.Text("?לאן באלי", size=24, color=ft.Colors.WHITE), bgcolor="#4B0082", padding=20, border_radius=15),
+                ft.Container(content=ft.Text("2Where", size=24, color=ft.Colors.WHITE), bgcolor="#4B0082", padding=20, border_radius=15),
                 ft.Container(
                     content=ft.Column([
                         ft.Text(f"היי {new_user}!", size=32, color=ft.Colors.BLUE_800, weight=ft.FontWeight.BOLD),
@@ -304,9 +301,7 @@ def main(page: ft.Page):
                 content.controls.extend([
                     ft.Container(
                         content=ft.Text("משתמשים אורחים לא יכולים לשמור נתונים. נא להתחבר למערכת.", color=ft.Colors.RED, size=18, weight=ft.FontWeight.BOLD),
-                        bgcolor=ft.Colors.with_opacity(0.9, ft.Colors.WHITE),
                         padding=15,
-                        border_radius=8,
                         margin=ft.margin.only(bottom=20)
                     ),
                     ft.Row([
@@ -327,8 +322,6 @@ def main(page: ft.Page):
             else:
                 avatar_display = ft.CircleAvatar(content=ft.Text(username[0].upper(), size=40, color=ft.Colors.WHITE), radius=60, bgcolor=ft.Colors.GREY)
 
-            # --- GALLERY BUTTON ---
-            # Triggers native gallery if Flet environment is properly updated
             upload_btn = ft.Button(
                 content=ft.Text("העלה מהגלריה"),
                 icon=ft.Icons.PHOTO_LIBRARY,
@@ -338,7 +331,6 @@ def main(page: ft.Page):
                 ),
                 bgcolor=ft.Colors.WHITE
             )
-            # ----------------------------------
 
             url_input = ft.TextField(value=avatar_url, label="או הדבק קישור (URL)...", width=250, rtl=True, bgcolor=ft.Colors.WHITE)
             btn_save_link = ft.Button(content=ft.Text("שמור"), bgcolor=ft.Colors.BLUE_600, color=ft.Colors.WHITE, on_click=lambda e: (backend.update_avatar(url_input.value), render("personal_area")))
@@ -397,7 +389,7 @@ def main(page: ft.Page):
             )
 
             content.controls.extend([
-                ft.Container(content=ft.Text(f"אזור אישי - {username}", size=24, color="#4B0082"), bgcolor=ft.Colors.with_opacity(0.8, ft.Colors.WHITE), padding=5, border_radius=8),
+                ft.Container(content=ft.Text(f"אזור אישי - {username}", size=24, color="#4B0082"), padding=5),
                 avatar_section, prefs_section, favs_section,
                 ft.Button(content=ft.Text("חזרה לחיפוש"), on_click=lambda _: render("search_screen"), bgcolor=ft.Colors.WHITE)
             ])
@@ -450,9 +442,7 @@ def main(page: ft.Page):
         elif screen == "results":
             results_count_text = ft.Container(
                 content=ft.Text("מחפש פעילויות...", size=20, color=ft.Colors.RED_700, weight=ft.FontWeight.BOLD),
-                bgcolor=ft.Colors.with_opacity(0.8, ft.Colors.WHITE),
-                padding=ft.padding.symmetric(horizontal=10, vertical=5),
-                border_radius=8
+                padding=ft.padding.symmetric(horizontal=10, vertical=5)
             )
             content.controls.append(results_count_text)
 
@@ -530,11 +520,23 @@ def main(page: ft.Page):
                                 await page.launch_url(url)
                             return open_map
 
-                        title_btn = ft.Button(
-                            content=ft.Text(item['name'], size=20, weight=ft.FontWeight.W_900, color="#2c3e50", max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
+                        title_btn = ft.Container(
+                            content=ft.Text(
+                                item.get('short_headline', item['name']),
+                                size=18,
+                                weight=ft.FontWeight.W_900,
+                                color=ft.Colors.WHITE,
+                                max_lines=2,
+                                overflow=ft.TextOverflow.ELLIPSIS,
+                                text_align=ft.TextAlign.CENTER
+                            ),
                             on_click=make_go_to_details(item),
-                            bgcolor=ft.Colors.TRANSPARENT,
-                            style=ft.ButtonStyle(padding=0)
+                            alignment=ft.Alignment(0, 0),
+                            expand=True,
+                            ink=True,
+                            bgcolor="#343a40",
+                            border_radius=30,
+                            padding=ft.padding.symmetric(horizontal=10, vertical=8)
                         )
 
                         fav_btn = ft.IconButton(
@@ -557,22 +559,30 @@ def main(page: ft.Page):
 
                         fav_btn.on_click = on_fav_click
 
+                        rec_price = item.get('recommended_price', item['price'] + int(item['price'] * 0.15))
+                        
                         price_tag = ft.Container(
                             content=ft.Text(f"{item['price']} ₪", color="#2e7d32", size=16, weight=ft.FontWeight.BOLD),
                             bgcolor="#99e89f", padding=ft.padding.symmetric(horizontal=12, vertical=4),
                             border_radius=20, border=ft.border.all(1, "#c8e6c9")
                         )
+                        rec_price_text = ft.Text(f"מחיר מומלץ: {rec_price} ₪", size=11, color=ft.Colors.GREY_600)
+
+                        price_section = ft.Column(
+                            controls=[price_tag, rec_price_text],
+                            spacing=2,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                        )
 
                         img_box = ft.Container(
                             content=ft.Image(src=item['image_url'], fit="cover"),
                             width=140, height=120, border_radius=8,
-                            border=ft.border.all(2, item.get('color', '#333')),
                             clip_behavior=ft.ClipBehavior.HARD_EDGE
                         )
 
                         top_row = ft.Row([
-                            ft.Container(content=title_btn, expand=True, padding=ft.padding.only(left=10)),
-                            price_tag
+                            title_btn,
+                            price_section
                         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.START)
 
                         address_btn = ft.Container(
@@ -586,7 +596,7 @@ def main(page: ft.Page):
                         details_col = ft.Column([
                             top_row,
                             address_btn,
-                            ft.Text(item['desc'], size=14, max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
+                            ft.Text(item.get('short_description', item['desc']), size=14, max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
                             fav_btn
                         ], expand=True, margin=ft.margin.only(right=25))
 
@@ -612,6 +622,9 @@ def main(page: ft.Page):
             content.controls.append(ft.Button(content=ft.Text("➔ חזור לחיפוש"), on_click=lambda _: render("search_screen"), bgcolor=ft.Colors.WHITE))
 
         elif screen == "event_details":
+            # 1. Turn off scrolling for the main container on this specific screen
+            content.scroll = None
+
             item = backend.current_event
             if not item: return
 
@@ -626,7 +639,10 @@ def main(page: ft.Page):
             )
 
             def on_fav_click(e):
-                if username == "אורח": e.control.icon = ft.Icons.LOCK; page.update(); return
+                if username == "אורח" or not username:
+                    e.control.icon = ft.Icons.LOCK
+                    page.update()
+                    return
                 backend.toggle_favorite(item['name'])
                 is_now_fav = item['name'] in backend.users_db[username].get("favorites", [])
                 e.control.icon = ft.Icons.FAVORITE if is_now_fav else ft.Icons.FAVORITE_BORDER
@@ -635,7 +651,7 @@ def main(page: ft.Page):
             
             fav_btn.on_click = on_fav_click
 
-            msg_out = ft.Text(color=ft.Colors.GREEN_700, bgcolor=ft.Colors.WHITE)
+            msg_out = ft.Text(color=ft.Colors.GREEN_700, bgcolor=ft.Colors.TRANSPARENT)
             def handle_book(e):
                 msg_out.value = "הפיצ'ר הזה יגיע בקרוב! 🚀"
                 page.update()
@@ -655,45 +671,82 @@ def main(page: ft.Page):
                 content=ft.Row([
                     ft.Text(f"📍 נווט אל: {item['address']}", color=ft.Colors.RED_700, weight=ft.FontWeight.BOLD)
                 ], tight=True),
-                bgcolor=ft.Colors.RED_50, padding=10, border_radius=20, alignment=ft.Alignment.CENTER_RIGHT,
+                bgcolor=ft.Colors.RED_50, padding=10, border_radius=20, alignment=ft.Alignment(1, 0),
                 on_click=open_map,
                 ink=True
             )
 
-            content.controls.extend([
-                ft.Container(
-                    content=ft.Image(src=item['image_url'], fit="cover"),
-                    width=page.width, height=250, border_radius=15,
-                    shadow=ft.BoxShadow(blur_radius=16, color=ft.Colors.BLACK_26),
-                    clip_behavior=ft.ClipBehavior.HARD_EDGE
-                ),
-                ft.Row([
-                    ft.Container(content=ft.Text(item['name'], size=26, weight=ft.FontWeight.W_800, color="#4B0082"), expand=True, bgcolor=ft.Colors.with_opacity(0.8, ft.Colors.WHITE), padding=5, border_radius=8),
-                    ft.Container(content=ft.Text(f"{item['price']} ₪ לאדם", color="#2e7d32", size=16, weight=ft.FontWeight.BOLD), bgcolor="#99e89f", padding=ft.padding.symmetric(horizontal=15, vertical=5), border_radius=20)
-                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, margin=ft.margin.only(top=15), vertical_alignment=ft.CrossAxisAlignment.START),
-                
-                map_button,
-                
-                ft.Container(
-                    content=ft.Column([
-                        ft.Text("על הפעילות:", size=18, weight=ft.FontWeight.BOLD),
-                        ft.Text(item['desc'], size=16, color=ft.Colors.GREY_800)
-                    ]),
-                    bgcolor=ft.Colors.with_opacity(0.95, ft.Colors.WHITE), border=ft.border.all(1, "#eeeeee"), padding=20, border_radius=12, margin=ft.margin.only(top=15, bottom=15), width=page.width
-                ),
+            rec_price = item.get('recommended_price', item['price'] + int(item['price'] * 0.15))
+            
+            price_tag = ft.Container(content=ft.Text(f"{item['price']} ₪ לאדם", color="#2e7d32", size=16, weight=ft.FontWeight.BOLD), bgcolor="#99e89f", padding=ft.padding.symmetric(horizontal=15, vertical=5), border_radius=20)
+            rec_price_text = ft.Text(f"מחיר מומלץ: {rec_price} ₪", size=12, color=ft.Colors.GREY_600)
+            
+            price_section = ft.Column([price_tag, rec_price_text], spacing=2, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
 
-                ft.Container(
-                    content=ft.Column([
-                        ft.Row([
-                            ft.Button(content=ft.Text("📅 צור אירוע / הזמן מקום"), bgcolor=ft.Colors.GREEN, color=ft.Colors.WHITE, height=50, expand=True, on_click=handle_book),
-                            fav_btn
+            # 2. Create a scrollable section for the event details
+            scrollable_details = ft.Column(
+                expand=True, # Takes up all available space above the sticky bar
+                scroll="auto", # Only this part scrolls
+                controls=[
+                    ft.Container(
+                        content=ft.Image(src=item['image_url'], fit="cover"),
+                        width=page.width, height=250, border_radius=15,
+                        shadow=ft.BoxShadow(blur_radius=16, color=ft.Colors.BLACK_26),
+                        clip_behavior=ft.ClipBehavior.HARD_EDGE
+                    ),
+                    ft.Row([
+                        ft.Container(
+                            content=ft.Text(item['name'], size=24, weight=ft.FontWeight.W_800, color=ft.Colors.WHITE, text_align=ft.TextAlign.CENTER),
+                            expand=True,
+                            bgcolor=ft.Colors.BLACK,
+                            border_radius=10,
+                            padding=10,
+                            alignment=ft.Alignment(0, 0)
+                        ),
+                        price_section
+                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, margin=ft.margin.only(top=15), vertical_alignment=ft.CrossAxisAlignment.CENTER),
+                    
+                    map_button,
+                    
+                    ft.Container(
+                        content=ft.Column([
+                            ft.Text("על הפעילות:", size=18, weight=ft.FontWeight.BOLD),
+                            ft.Text(item['desc'], size=16, color=ft.Colors.GREY_800)
                         ]),
-                        msg_out
-                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                    bgcolor=ft.Colors.with_opacity(0.9, ft.Colors.BLUE_50), padding=20, border_radius=15, width=page.width
-                ),
-                
-                ft.Button(content=ft.Text("➔ חזרה לתוצאות"), on_click=lambda _: render("results"), margin=ft.margin.only(top=20), bgcolor=ft.Colors.WHITE)
+                        padding=ft.padding.symmetric(horizontal=5, vertical=15), margin=ft.margin.only(top=5, bottom=15), width=page.width
+                    ),
+                    
+                    ft.Button(content=ft.Text("➔ חזרה לתוצאות"), on_click=lambda _: render("results"), margin=ft.margin.only(top=10, bottom=20), bgcolor=ft.Colors.WHITE)
+                ]
+            )
+
+            # 3. Create the sticky bottom bar
+            sticky_bottom_bar = ft.Container(
+                content=ft.Column([
+                    ft.Row([
+                        ft.Button(
+                            content=ft.Text("📅 צור אירוע / הזמן מקום", size=18, weight=ft.FontWeight.BOLD),
+                            bgcolor=ft.Colors.GREEN,
+                            color=ft.Colors.WHITE,
+                            height=60,
+                            expand=True,
+                            on_click=handle_book
+                        ),
+                        fav_btn
+                    ], spacing=10),
+                    msg_out
+                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                bgcolor=ft.Colors.with_opacity(0.98, ft.Colors.BLUE_50),
+                padding=ft.padding.only(top=15, bottom=25, left=20, right=20),
+                margin=ft.margin.only(bottom=-10, left=-10, right=-10),
+                border_radius=ft.border_radius.only(top_left=25, top_right=25),
+                shadow=ft.BoxShadow(spread_radius=1, blur_radius=15, color=ft.Colors.BLACK_12, offset=ft.Offset(0, -3))
+            )
+
+            # 4. Add the scrolling section and the sticky bar to the main screen content
+            content.controls.extend([
+                scrollable_details,
+                sticky_bottom_bar
             ])
 
         return content
