@@ -114,7 +114,7 @@ class AppBackend:
         return filtered
 
 def main(page: ft.Page):
-    page.title = "מערכת אילת"
+    page.title = "לאן באלי"
     page.rtl = True
     page.theme_mode = ft.ThemeMode.LIGHT
     page.fonts = {"Rubik": "https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&display=swap"}
@@ -208,7 +208,7 @@ def main(page: ft.Page):
         )
 
         logo = ft.Container(
-            content=ft.Text("מערכת אילת", weight=ft.FontWeight.W_800, size=24, color="#4B0082"),
+            content=ft.Text("לאן באלי", weight=ft.FontWeight.W_800, size=24, color="#4B0082"),
             bgcolor=ft.Colors.with_opacity(0.8, ft.Colors.WHITE),
             padding=ft.padding.symmetric(horizontal=10, vertical=2),
             border_radius=8
@@ -230,7 +230,7 @@ def main(page: ft.Page):
         if screen == "welcome":
             content.controls.extend([
                 ft.Container(
-                    content=ft.Text("מערכת הפעילויות של אילת", size=24, color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD),
+                    content=ft.Text("לאן באלי?", size=24, color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD),
                     bgcolor="#4B0082", padding=20, border_radius=15, alignment=ft.Alignment.CENTER, width=400
                 ),
                 ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
@@ -287,7 +287,7 @@ def main(page: ft.Page):
         elif screen == "after_register_step":
             new_user = backend.last_registered_user
             content.controls.extend([
-                ft.Container(content=ft.Text("מערכת הפעילויות של אילת", size=24, color=ft.Colors.WHITE), bgcolor="#4B0082", padding=20, border_radius=15),
+                ft.Container(content=ft.Text("?לאן באלי", size=24, color=ft.Colors.WHITE), bgcolor="#4B0082", padding=20, border_radius=15),
                 ft.Container(
                     content=ft.Column([
                         ft.Text(f"היי {new_user}!", size=32, color=ft.Colors.BLUE_800, weight=ft.FontWeight.BOLD),
@@ -419,21 +419,18 @@ def main(page: ft.Page):
                 options=[ft.dropdown.Option(key=k, text=k) for k in backend.people_map.keys()],
                 value=inv_people.get(backend.user_session['people_count'], '3-5'),
                 width=300,
-                on_select=exec_search,
                 bgcolor=ft.Colors.WHITE
             )
             budget_dd = ft.Dropdown(
                 options=[ft.dropdown.Option(key=k, text=k) for k in backend.budget_options.keys()],
                 value=inv_budget.get(backend.user_session['budget'], 'ללא הגבלה'),
                 width=300,
-                on_select=exec_search,
                 bgcolor=ft.Colors.WHITE
             )
             area_dd = ft.Dropdown(
                 options=[ft.dropdown.Option(key=a, text=a) for a in backend.areas],
                 value=backend.user_session['area'],
                 width=300,
-                on_select=exec_search,
                 bgcolor=ft.Colors.WHITE
             )
 
@@ -704,5 +701,4 @@ def main(page: ft.Page):
     page.add(main_layout)
     render("welcome")
 
-# Change the very last line to force it to open in your browser
 ft.app(target=main, assets_dir="assets")
