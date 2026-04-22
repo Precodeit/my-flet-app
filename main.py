@@ -130,6 +130,7 @@ def main(page: ft.Page):
 
     content_container = ft.Container(expand=True, padding=10)
 
+    # --- IOS SAFE AREA FIX ---
     main_layout = ft.Stack(
         controls=[
             ft.Image(
@@ -137,8 +138,11 @@ def main(page: ft.Page):
                 fit="cover",
                 left=0, right=0, top=0, bottom=0
             ),
-            ft.SafeArea(
-                content=content_container,
+            ft.Container(
+                content=ft.SafeArea(
+                    content=content_container,
+                    bottom=False # Tells iOS to ignore the bottom swipe bar shield
+                ),
                 left=0, right=0, top=0, bottom=0
             )
         ],
@@ -622,7 +626,7 @@ def main(page: ft.Page):
             content.controls.append(ft.Button(content=ft.Text("➔ חזור לחיפוש"), on_click=lambda _: render("search_screen"), bgcolor=ft.Colors.WHITE))
 
         elif screen == "event_details":
-            # 1. Turn off scrolling for the main container on this specific screen
+            # 1. Turn off global scrolling so the sticky bar works
             content.scroll = None
 
             item = backend.current_event
@@ -683,10 +687,10 @@ def main(page: ft.Page):
             
             price_section = ft.Column([price_tag, rec_price_text], spacing=2, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
 
-            # 2. Create a scrollable section for the event details
+            # 2. The scrollable content above the bar
             scrollable_details = ft.Column(
-                expand=True, # Takes up all available space above the sticky bar
-                scroll="auto", # Only this part scrolls
+                expand=True,
+                scroll="auto",
                 controls=[
                     ft.Container(
                         content=ft.Image(src=item['image_url'], fit="cover"),
@@ -720,7 +724,7 @@ def main(page: ft.Page):
                 ]
             )
 
-            # 3. Create the sticky bottom bar
+            # 3. The sticky bottom bar with iOS safe area overrides
             sticky_bottom_bar = ft.Container(
                 content=ft.Column([
                     ft.Row([
@@ -737,13 +741,12 @@ def main(page: ft.Page):
                     msg_out
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                 bgcolor=ft.Colors.with_opacity(0.98, ft.Colors.BLUE_50),
-                padding=ft.padding.only(top=15, bottom=25, left=20, right=20),
-                margin=ft.margin.only(bottom=-10, left=-10, right=-10),
+                padding=ft.padding.only(top=15, bottom=45, left=20, right=20),
+                margin=ft.margin.only(bottom=-10, left=-15, right=-15),
                 border_radius=ft.border_radius.only(top_left=25, top_right=25),
                 shadow=ft.BoxShadow(spread_radius=1, blur_radius=15, color=ft.Colors.BLACK_12, offset=ft.Offset(0, -3))
             )
 
-            # 4. Add the scrolling section and the sticky bar to the main screen content
             content.controls.extend([
                 scrollable_details,
                 sticky_bottom_bar
